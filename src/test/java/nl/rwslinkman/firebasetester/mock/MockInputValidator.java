@@ -2,6 +2,7 @@ package nl.rwslinkman.firebasetester.mock;
 
 import nl.rwslinkman.firebasetester.validator.InputValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
 public class MockInputValidator implements InputValidator {
     @Override
     public List<String> validateInput(String apiKey, String requestBody) {
-        return null;
+        return new ArrayList<>();
     }
 
     public boolean wasCalled() {
