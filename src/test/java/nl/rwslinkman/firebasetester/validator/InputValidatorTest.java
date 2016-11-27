@@ -24,6 +24,14 @@ public class InputValidatorTest
         this.inputValidator = new ProdInputValidator();
     }
 
+    /*
+     * input => output
+     * No API key provided (null)   => 1 message
+     * Empty API key provided       => 1 message
+     * No recipient provided          => 1 message
+     * No data provided             => 1 message
+     */
+
     @Test
     public void test_shouldReturnEmptyList_whenGivenValidInput_singleRecipient() throws Exception
     {
