@@ -1,0 +1,16 @@
+= BattlePlanner
+Project by Rick Slinkman;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:Author:    Rick Slinkman
+:Email:     rw.slinkman@gmail.com
+
+[introduction]
+= Introduction
+Tool to send test data through Google Firebase
+
+Created by **Rick Slinkman**
