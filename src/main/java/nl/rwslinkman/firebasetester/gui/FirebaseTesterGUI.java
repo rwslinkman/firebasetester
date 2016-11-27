@@ -3,8 +3,6 @@ package nl.rwslinkman.firebasetester.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import nl.rwslinkman.firebasetester.FirebaseTester;
-import nl.rwslinkman.firebasetester.gui.listener.KeyTypedListener;
-import nl.rwslinkman.firebasetester.gui.listener.SimpleKeyListener;
 import nl.rwslinkman.firebasetester.gui.listener.UserInterfaceEventListener;
 import nl.rwslinkman.firebasetester.gui.listener.WindowListener;
 
@@ -12,20 +10,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Rick Slinkman
  */
-public class FirebaseTesterGUI implements ActionListener, KeyTypedListener {
+public class FirebaseTesterGUI implements ActionListener {
+    private static final String NEWLINE = "\n";
     private UserInterfaceEventListener eventListener;
     private WindowListener windowListener;
-    private RequestBodyParser bodyParser;
 
     private JTextField mApiKeyField;
     private JPanel guiPanel;
     private JTextArea mRequestBodyField;
-    private JLabel mParseResultOutput;
     private JButton mSubmitButton;
+    private JLabel mErrorsOutput;
 
     public FirebaseTesterGUI(UserInterfaceEventListener listener) {
         this.eventListener = listener;
@@ -41,7 +41,6 @@ public class FirebaseTesterGUI implements ActionListener, KeyTypedListener {
         if (this.windowListener != null) {
             frame.addWindowListener(this.windowListener);
         }
-//        frame.setSize(1000, 1000);
         frame.pack();
         setupUI();
         frame.setSize(new Dimension(750, 500));
@@ -51,15 +50,27 @@ public class FirebaseTesterGUI implements ActionListener, KeyTypedListener {
     }
 
     private void setupUI() {
-        boolean hasParser = bodyParser != null;
-        if (hasParser) {
-            String empty = bodyParser.getEmpty();
-            mParseResultOutput.setText(empty);
-            mRequestBodyField.addKeyListener(new SimpleKeyListener(this));
-        }
-        mParseResultOutput.setVisible(hasParser);
-
+        mErrorsOutput.setVisible(false);
         mSubmitButton.addActionListener(this);
+    }
+
+    public void showErrors(List<String> errors) {
+        if (errors == null || errors.size() == 0) return;
+
+        String errorMsg = "The input is not valid. See the message(s):" + NEWLINE;
+        for (int e = 0; e < errors.size(); e++) {
+            String err = errors.get(e);
+            errorMsg += String.format(Locale.US, "[%d] %s %s", e + 1, err, NEWLINE);
+        }
+        final String output = this.toMultilineString(errorMsg);
+        SwingUtilities.invokeLater(() -> {
+            mErrorsOutput.setText(output);
+            mErrorsOutput.setVisible(true);
+        });
+    }
+
+    private String toMultilineString(String orig) {
+        return "<html>" + orig.replaceAll(NEWLINE, "<br>") + "</html>";
     }
 
     @Override
@@ -70,23 +81,10 @@ public class FirebaseTesterGUI implements ActionListener, KeyTypedListener {
         String body = mRequestBodyField.getText();
         System.out.println("Body: " + body);
 
-        if (eventListener != null) {
+        SwingUtilities.invokeLater(() -> {
+            mErrorsOutput.setVisible(false);
             eventListener.onFirebaseTestSubmitted(apiKey, body);
-        }
-    }
-
-    public void setRequestBodyParser(RequestBodyParser parser) {
-        this.bodyParser = parser;
-    }
-
-    @Override
-    public void onKeyTyped(char key)
-    {
-        if (bodyParser != null) {
-            String fieldValue = mRequestBodyField.getText();
-            String parseResult = bodyParser.parseRequestBody(fieldValue);
-            mParseResultOutput.setText(parseResult);
-        }
+        });
     }
 
     {
@@ -105,25 +103,26 @@ public class FirebaseTesterGUI implements ActionListener, KeyTypedListener {
      */
     private void $$$setupUI$$$() {
         guiPanel = new JPanel();
-        guiPanel.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
+        guiPanel.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
         guiPanel.setMinimumSize(new Dimension(500, 500));
         mApiKeyField = new JTextField();
         guiPanel.add(mApiKeyField, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("API Key");
-        guiPanel.add(label1, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        guiPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mRequestBodyField = new JTextArea();
         guiPanel.add(mRequestBodyField, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Request body");
-        guiPanel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
-        mParseResultOutput = new JLabel();
-        mParseResultOutput.setText("Valid");
-        guiPanel.add(mParseResultOutput, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mSubmitButton = new JButton();
         mSubmitButton.setLabel("Send");
         mSubmitButton.setText("Send");
-        guiPanel.add(mSubmitButton, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        guiPanel.add(mSubmitButton, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        mErrorsOutput = new JLabel();
+        mErrorsOutput.setEnabled(true);
+        mErrorsOutput.setText("Errors");
+        guiPanel.add(mErrorsOutput, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("Request body");
+        guiPanel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
     }
 
     /**
