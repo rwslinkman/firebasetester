@@ -77,7 +77,13 @@ public class FirebaseTester implements UserInterfaceEventListener
         System.out.println("Send request with api key and request body");
         // TODO make mValidator return list of responses (empty if valid request)
         List<String> errors = mValidator.validateInput(apiKey, requestBody);
-        mGUI.showErrors(errors);
+        if(errors.size() > 0)
+        {
+            mGUI.showErrors(errors);
+        }
+
+        // TODO Create http request to Firebase
+        System.out.println("Send request");
     }
 
     private String post(String url, String json) throws IOException
