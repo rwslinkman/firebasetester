@@ -16,7 +16,7 @@ import java.util.Locale;
 /**
  * @author Rick Slinkman
  */
-public class FirebaseTesterGUI implements ActionListener {
+public class FirebaseTesterGUI implements GUI, ActionListener {
     private static final String NEWLINE = "\n";
     private UserInterfaceEventListener eventListener;
     private WindowListener windowListener;
@@ -27,8 +27,9 @@ public class FirebaseTesterGUI implements ActionListener {
     private JButton mSubmitButton;
     private JLabel mErrorsOutput;
 
-    public FirebaseTesterGUI(UserInterfaceEventListener listener) {
-        this.eventListener = listener;
+    @Override
+    public void setUserInterfaceEventListener(UserInterfaceEventListener listener) {
+        eventListener = listener;
         if (this.eventListener != null) {
             this.windowListener = new WindowListener(this.eventListener);
         }

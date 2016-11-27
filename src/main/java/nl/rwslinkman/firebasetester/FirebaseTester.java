@@ -1,10 +1,12 @@
 package nl.rwslinkman.firebasetester;
 
 import nl.rwslinkman.firebasetester.gui.FirebaseTesterGUI;
+import nl.rwslinkman.firebasetester.gui.GUI;
 import nl.rwslinkman.firebasetester.gui.listener.UserInterfaceEventListener;
 import nl.rwslinkman.firebasetester.http.HttpClient;
 import nl.rwslinkman.firebasetester.http.ProdHttpClient;
 import nl.rwslinkman.firebasetester.validator.InputValidator;
+import nl.rwslinkman.firebasetester.validator.ProdInputValidator;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -22,27 +24,46 @@ public class FirebaseTester implements UserInterfaceEventListener
     public static final String VERSION_NAME = "0.1"; // TODO Get from gradle
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private FirebaseTesterGUI mGUI;
+    private GUI mGUI;
     private HttpClient mHttpClient;
     private InputValidator mValidator;
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         System.out.println("FirebaseTester starting");
-        new FirebaseTester().start();
-        System.out.println("FirebaseTester started");
+        new FirebaseTester()
+                .setHttpClient(new ProdHttpClient())
+                .setInputValidator(new ProdInputValidator())
+                .setGUI(new FirebaseTesterGUI())
+                .start();
     }
 
-    private void start() {
-        mHttpClient = new ProdHttpClient();
-        mValidator = null; // TODO Create FirebaseRequestValidator
+    public void start() {
+        int errorCount = 0;
+        if(mGUI == null) {
+            System.out.println("ERROR: No GUI set");
+            errorCount++;
+        }
+        if(mValidator == null) {
+            System.out.println("ERROR: No InputValidator set");
+            errorCount++;
+        }
+        if(mHttpClient == null) {
+            System.out.println("ERROR: No HttpClient set");
+            errorCount++;
+        }
 
+        if(errorCount > 0)
+        {
+            System.out.println("FirebaseTester shutting down with " + Integer.toString(errorCount) + " error(s)");
+            onExit();
+            return;
+        }
 
-        mGUI = new FirebaseTesterGUI(this);
+        System.out.println("FirebaseTester can start without warnings");
         mGUI.createFrame();
     }
 
-    public FirebaseTesterGUI getGUI() {
+    public GUI getGUI() {
         return mGUI;
     }
 
@@ -56,9 +77,6 @@ public class FirebaseTester implements UserInterfaceEventListener
         System.out.println("Send request with api key and request body");
         // TODO make mValidator return list of responses (empty if valid request)
         List<String> errors = mValidator.validateInput(apiKey, requestBody);
-
-        // Temp response to button click
-        errors.add("No errors found");
         mGUI.showErrors(errors);
     }
 
@@ -73,5 +91,21 @@ public class FirebaseTester implements UserInterfaceEventListener
         Response response = mHttpClient.sendRequest(request);
 
         return response.body().string();
+    }
+
+    public FirebaseTester setHttpClient(HttpClient httpClient) {
+        this.mHttpClient = httpClient;
+        return this;
+    }
+
+    public FirebaseTester setInputValidator(InputValidator inputValidator) {
+        this.mValidator = inputValidator;
+        return this;
+    }
+
+    public FirebaseTester setGUI(GUI gui) {
+        this.mGUI = gui;
+        this.mGUI.setUserInterfaceEventListener(this);
+        return this;
     }
 }
