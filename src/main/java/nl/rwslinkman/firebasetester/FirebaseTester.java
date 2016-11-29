@@ -74,14 +74,14 @@ public class FirebaseTester implements UserInterfaceEventListener
     @Override
     public void onFirebaseTestSubmitted(String apiKey, String requestBody)
     {
-        System.out.println("Send request with api key and request body");
-        // TODO make mValidator return list of responses (empty if valid request)
         List<String> errors = mValidator.validateInput(apiKey, requestBody);
         if(errors.size() > 0)
         {
             mGUI.showErrors(errors);
+            return;
         }
 
+        requestBody = requestBody.replaceAll("(?!\\r)\\n", "\r\n");
         // TODO Create http request to Firebase
         System.out.println("Send request");
     }
