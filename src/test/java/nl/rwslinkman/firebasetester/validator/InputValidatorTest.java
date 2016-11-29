@@ -1,6 +1,7 @@
 package nl.rwslinkman.firebasetester.validator;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,10 +18,22 @@ import static org.junit.Assert.*;
 public class InputValidatorTest
 {
     private ProdInputValidator inputValidator;
+    private List<String> output;
 
     @Before
     public void setUp() throws Exception {
         this.inputValidator = new ProdInputValidator();
+    }
+
+    @After
+    public void after() throws Exception {
+        if(output.size() > 0)
+        {
+            for(String string : output)
+            {
+                System.out.println(string);
+            }
+        }
     }
 
     /*
@@ -41,7 +54,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(apiKey, requestBody);
 
         assertNotNull(output);
         assertEquals(0, output.size());
@@ -56,7 +69,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createMultipleRecipientsJSON(addresses, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(apiKey, requestBody);
 
         assertNotNull(output);
         assertEquals(0, output.size());
@@ -70,7 +83,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput(null, requestBody);
+        output = this.inputValidator.validateInput(null, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -85,7 +98,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createMultipleRecipientsJSON(addresses, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput(null, requestBody);
+        output = this.inputValidator.validateInput(null, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -100,7 +113,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput("", requestBody);
+        output = this.inputValidator.validateInput("", requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -115,7 +128,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createMultipleRecipientsJSON(addresses, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput("", requestBody);
+        output = this.inputValidator.validateInput("", requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -127,7 +140,7 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
 
-        List<String> output = this.inputValidator.validateInput(apiKey, null);
+        output = this.inputValidator.validateInput(apiKey, null);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -139,7 +152,7 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
 
-        List<String> output = this.inputValidator.validateInput(apiKey, null);
+        output = this.inputValidator.validateInput(apiKey, null);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -151,7 +164,7 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
 
-        List<String> output = this.inputValidator.validateInput(apiKey, "");
+        output = this.inputValidator.validateInput(apiKey, "");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -163,7 +176,7 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
 
-        List<String> output = this.inputValidator.validateInput(apiKey, "");
+        output = this.inputValidator.validateInput(apiKey, "");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -173,7 +186,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessages_whenNothingProvided() throws Exception
     {
-        List<String> output = this.inputValidator.validateInput(null, null);
+        output = this.inputValidator.validateInput(null, null);
 
         assertNotNull(output);
         assertEquals(2, output.size());
@@ -189,7 +202,7 @@ public class InputValidatorTest
         data.put("message", "Hello world");
         String requestBody = createMultipleRecipientsJSON(null, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(apiKey, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -201,7 +214,7 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
 
-        List<String> output = this.inputValidator.validateInput(apiKey, "Hello world");
+        output = this.inputValidator.validateInput(apiKey, "Hello world");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -213,7 +226,7 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
 
-        List<String> output = this.inputValidator.validateInput(apiKey, "{}");
+        output = this.inputValidator.validateInput(apiKey, "{}");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -226,38 +239,108 @@ public class InputValidatorTest
     {
         String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
         String addr = "feuhjfeij293ur9if93k93kd92";
+        String requestBody = createSingleRecipientJSON(addr, "1234");
+
+        output = this.inputValidator.validateInput(apiKey, requestBody);
+
+        assertNotNull(output);
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_DATA_NOT_OBJECT);
+    }
+
+    @Test
+    public void test_shouldReturnMessage_whenDataIsNotString() throws Exception
+    {
+        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
+        String addr = "feuhjfeij293ur9if93k93kd92";
+        String requestBody = createSingleRecipientJSON(addr, 1234);
+
+        output = this.inputValidator.validateInput(apiKey, requestBody);
+
+        assertNotNull(output);
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_DATA_NOT_OBJECT);
+    }
+
+    @Test
+    public void test_shouldReturnMessage_whenGivenAddressNotString_singleRecipient()
+    {
+        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
+        Map<String, Object> data = new HashMap<>();
+        data.put("message", "Hello world");
+        String requestBody = createSingleRecipientJSON(1234, mapToJson(data));
+
+        output = this.inputValidator.validateInput(apiKey, requestBody);
+
+        assertNotNull(output);
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_ADDRESS_INVALID);
+    }
+
+    @Test
+    public void test_shouldReturnMessage_whenGivenAddressNotString_multipleRecipients()
+    {
+        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
+        Map<String, Object> data = new HashMap<>();
+        data.put("message", "Hello world");
+        String requestBody = createMultiRecipientsJSON(1234, mapToJson(data));
+
+        output = this.inputValidator.validateInput(apiKey, requestBody);
+
+        assertNotNull(output);
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_ADDRESSES_INVALID);
+    }
+
+    @Test
+    public void test_shouldReturnMessage_whenJsonSuffixed()
+    {
+        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
+        String addr = "feuhjfeij293ur9if93k93kd92";
         Map<String, Object> data = new HashMap<>();
         data.put("message", "Hello world");
         String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
 
-        List<String> output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(apiKey, requestBody+"test");
 
         assertNotNull(output);
-        assertEquals(0, output.size());
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_INVALID_JSON);
     }
 
     // Helper methods
-    private String createSingleRecipientJSON(String address, Object data)
+    private String createSingleRecipientJSON(Object address, Object data)
     {
-        JSONObject obj = new JSONObject();
+        JSONObject obj = getDataObject(data);
         if(address != null) {
             obj.put("to", address);
-        }
-        if(data != null) {
-            obj.put("data", data);
         }
         return obj.toString();
     }
 
+    private JSONObject getDataObject(Object data) {
+        JSONObject obj = new JSONObject();
+        if(data != null) {
+            obj.put("data", data);
+        }
+        return obj;
+    }
+
     private String createMultipleRecipientsJSON(List<String> addresses, Object data)
     {
-        JSONObject obj = new JSONObject();
+        JSONObject obj = getDataObject(data);
         if(addresses != null) {
             String[] registrationIDs = addresses.toArray(new String[]{});
             obj.put("registration_ids", registrationIDs);
         }
-        if(data != null) {
-            obj.put("data", data);
+        return obj.toString();
+    }
+
+    private String createMultiRecipientsJSON(Object addresses, Object data)
+    {
+        JSONObject obj = getDataObject(data);
+        if(addresses != null) {
+            obj.put("registration_ids", addresses);
         }
         return obj.toString();
     }
@@ -269,7 +352,9 @@ public class InputValidatorTest
         {
             mapData.put(entry.getKey(), entry.getValue());
         }
-        return mapData.toString();
+        String mapString = mapData.toString();
+        System.out.println(mapString);
+        return mapString;
     }
 
     private void assertContains(List<String> list, String shouldContain)

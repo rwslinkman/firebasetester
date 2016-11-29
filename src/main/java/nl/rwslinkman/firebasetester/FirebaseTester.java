@@ -81,6 +81,10 @@ public class FirebaseTester implements UserInterfaceEventListener
         {
             mGUI.showErrors(errors);
         }
+        else {
+            errors.add("No errors! Validator works");
+            mGUI.showErrors(errors);
+        }
 
         // TODO Create http request to Firebase
         System.out.println("Send request");
