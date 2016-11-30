@@ -5,10 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -17,6 +14,9 @@ import static org.junit.Assert.*;
  */
 public class InputValidatorTest
 {
+    private static final String MOCK_API_KEY = "key=ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
+    private static final List<String> ADDRESSES = Arrays.asList("feuhjfeij293ur9if93k93kd92x", "feuhjfeij293ur9if93k93kd92y", "feuhjfeij293ur9if93k93kd92z");
+    public static final String ADDRESS = "feuhjfeij293ur9if93k93kd92";
     private ProdInputValidator inputValidator;
     private List<String> output;
 
@@ -36,25 +36,13 @@ public class InputValidatorTest
         }
     }
 
-    /*
-     * input => output
-     * [x] No API key provided (null)   => 1 message
-     * [-] Empty API key provided       => 1 message
-     * [-] No recipient provided        => 1 message
-     * [-] No data provided             => 1 message
-     * [-] No address(es) provided      => 1 message
-     */
-
     @Test
     public void test_shouldReturnEmptyList_whenGivenValidInput_singleRecipient() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-        String addr = "feuhjfeij293ur9if93k93kd92";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createSingleRecipientJSON(ADDRESS, mapToJson(data));
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertEquals(0, output.size());
@@ -63,13 +51,10 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnEmptyList_whenGivenValidInput_multipleRecipients() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-        List<String> addresses = Arrays.asList("feuhjfeij293ur9if93k93kd92", "feuhjfeij293ur9if93k93kd92x", "feuhjfeij293ur9if93k93kd92y");
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createMultipleRecipientsJSON(addresses, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createMultipleRecipientsJSON(ADDRESSES, mapToJson(data));
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertEquals(0, output.size());
@@ -78,10 +63,8 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenApiKeyMissing_singleRecipient() throws Exception
     {
-        String addr = "feuhjfeij293ur9if93k93kd92";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createSingleRecipientJSON(ADDRESS, mapToJson(data));
 
         output = this.inputValidator.validateInput(null, requestBody);
 
@@ -93,10 +76,8 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenApiKeyMissing_multipleRecipients() throws Exception
     {
-        List<String> addresses = Arrays.asList("feuhjfeij293ur9if93k93kd92", "feuhjfeij293ur9if93k93kd92x", "feuhjfeij293ur9if93k93kd92y");
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createMultipleRecipientsJSON(addresses, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createMultipleRecipientsJSON(ADDRESSES, mapToJson(data));
 
         output = this.inputValidator.validateInput(null, requestBody);
 
@@ -108,10 +89,8 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenApiKeyEmpty_singleRecipient() throws Exception
     {
-        String addr = "feuhjfeij293ur9if93k93kd92";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createSingleRecipientJSON(ADDRESS, mapToJson(data));
 
         output = this.inputValidator.validateInput("", requestBody);
 
@@ -123,10 +102,8 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenApiKeyEmpty_multipleRecipients() throws Exception
     {
-        List<String> addresses = Arrays.asList("feuhjfeij293ur9if93k93kd92", "feuhjfeij293ur9if93k93kd92x", "feuhjfeij293ur9if93k93kd92y");
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createMultipleRecipientsJSON(addresses, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createMultipleRecipientsJSON(ADDRESSES, mapToJson(data));
 
         output = this.inputValidator.validateInput("", requestBody);
 
@@ -138,9 +115,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenDataMissing_singleRecipient() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-
-        output = this.inputValidator.validateInput(apiKey, null);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, null);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -150,9 +125,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenDataMissing_multipleRecipients() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-
-        output = this.inputValidator.validateInput(apiKey, null);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, null);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -162,9 +135,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenDataEmpty_singleRecipient() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-
-        output = this.inputValidator.validateInput(apiKey, "");
+        output = this.inputValidator.validateInput(MOCK_API_KEY, "");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -174,9 +145,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenDataEmpty_multipleRecipients() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-
-        output = this.inputValidator.validateInput(apiKey, "");
+        output = this.inputValidator.validateInput(MOCK_API_KEY, "");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -197,12 +166,10 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenNoRecipientsProvided() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
+        Map<String, Object> data = mockMessageData();
         String requestBody = createMultipleRecipientsJSON(null, mapToJson(data));
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -212,9 +179,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenBodyIsNotJSON() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-
-        output = this.inputValidator.validateInput(apiKey, "Hello world");
+        output = this.inputValidator.validateInput(MOCK_API_KEY, "Hello world");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -224,9 +189,7 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenNoDataAndNoRecipients()
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-
-        output = this.inputValidator.validateInput(apiKey, "{}");
+        output = this.inputValidator.validateInput(MOCK_API_KEY, "{}");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -237,11 +200,10 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenDataIsNotJSON() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
         String addr = "feuhjfeij293ur9if93k93kd92";
         String requestBody = createSingleRecipientJSON(addr, "1234");
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -251,11 +213,10 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenDataIsNotString() throws Exception
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
         String addr = "feuhjfeij293ur9if93k93kd92";
         String requestBody = createSingleRecipientJSON(addr, 1234);
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -265,12 +226,10 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenGivenAddressNotString_singleRecipient()
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
+        Map<String, Object> data = mockMessageData();
         String requestBody = createSingleRecipientJSON(1234, mapToJson(data));
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -280,12 +239,12 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenGivenAddressNotString_multipleRecipients()
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
-        String requestBody = createMultiRecipientsJSON(1234, mapToJson(data));
+        Map<String, Object> data = mockMessageData();
+        JSONObject obj = getDataObject(data);
+        obj.put("registration_ids", (Object) 1234);
+        String requestBody = obj.toString();
 
-        output = this.inputValidator.validateInput(apiKey, requestBody);
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
@@ -295,17 +254,44 @@ public class InputValidatorTest
     @Test
     public void test_shouldReturnMessage_whenJsonSuffixed()
     {
-        String apiKey = "ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
         String addr = "feuhjfeij293ur9if93k93kd92";
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", "Hello world");
+        Map<String, Object> data = mockMessageData();
         String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
 
-        output = this.inputValidator.validateInput(apiKey, requestBody+"test");
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody+"test");
 
         assertNotNull(output);
         assertNotEquals(0, output.size());
         assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_INVALID_JSON);
+    }
+
+    @Test
+    public void test_shouldReturnMessage_whenApiKeyHasInvalidSuffix()
+    {
+        String addr = "feuhjfeij293ur9if93k93kd92";
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
+
+        String invalidSuffixedApiKey = MOCK_API_KEY.substring(4, MOCK_API_KEY.length());
+        output = this.inputValidator.validateInput(invalidSuffixedApiKey, requestBody);
+
+        assertNotNull(output);
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_API_KEY_INVALID_PREFIX);
+    }
+
+    @Test
+    public void test_shouldReturnMessage_whenRegistrationIDsNotOnlyStrings()
+    {
+        List<Object> addresses = Arrays.asList(ADDRESSES.get(0), ADDRESSES.get(1), 1234L);
+        Map<String, Object> data = mockMessageData();
+        String requestBody = createMultiObjectsRecipientsJSON(addresses, mapToJson(data));
+
+        output = this.inputValidator.validateInput(MOCK_API_KEY, requestBody);
+
+        assertNotNull(output);
+        assertNotEquals(0, output.size());
+        assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_ADDRESSES_NOT_ONLY_STRINGS);
     }
 
     // Helper methods
@@ -336,11 +322,12 @@ public class InputValidatorTest
         return obj.toString();
     }
 
-    private String createMultiRecipientsJSON(Object addresses, Object data)
+    private String createMultiObjectsRecipientsJSON(List<Object> addresses, Object data)
     {
         JSONObject obj = getDataObject(data);
         if(addresses != null) {
-            obj.put("registration_ids", addresses);
+            Object[] registrationIDs = addresses.toArray(new Object[]{});
+            obj.put("registration_ids", registrationIDs);
         }
         return obj.toString();
     }
@@ -355,6 +342,12 @@ public class InputValidatorTest
         String mapString = mapData.toString();
         System.out.println(mapString);
         return mapString;
+    }
+
+    private Map<String, Object> mockMessageData() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("message", "Hello world");
+        return data;
     }
 
     private void assertContains(List<String> list, String shouldContain)

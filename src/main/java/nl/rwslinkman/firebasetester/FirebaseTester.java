@@ -22,7 +22,7 @@ public class FirebaseTester implements UserInterfaceEventListener
 {
     public static final int VERSION_CODE = 1; // TODO Get from gradle
     public static final String VERSION_NAME = "0.1"; // TODO Get from gradle
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.parse("application/json");
 
     private GUI mGUI;
     private HttpClient mHttpClient;
@@ -86,11 +86,12 @@ public class FirebaseTester implements UserInterfaceEventListener
         System.out.println("Send request");
     }
 
-    private String post(String url, String json) throws IOException
+    private String post(String url, String json, String apiKey) throws IOException
     {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
+                .header("Authorization", apiKey)
                 .post(body)
                 .build();
 
