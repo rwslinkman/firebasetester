@@ -7,10 +7,7 @@ import nl.rwslinkman.firebasetester.http.HttpClient;
 import nl.rwslinkman.firebasetester.http.ProdHttpClient;
 import nl.rwslinkman.firebasetester.validator.InputValidator;
 import nl.rwslinkman.firebasetester.validator.ProdInputValidator;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.HttpUrl;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,22 +19,32 @@ public class FirebaseTester implements UserInterfaceEventListener
 {
     public static final int VERSION_CODE = 1; // TODO Get from gradle
     public static final String VERSION_NAME = "0.1"; // TODO Get from gradle
-    private static final MediaType JSON = MediaType.parse("application/json");
+    private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
     private GUI mGUI;
     private HttpClient mHttpClient;
     private InputValidator mValidator;
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         System.out.println("FirebaseTester starting");
-        new FirebaseTester()
+        FirebaseTester tester = new FirebaseTester.Builder()
                 .setHttpClient(new ProdHttpClient())
                 .setInputValidator(new ProdInputValidator())
                 .setGUI(new FirebaseTesterGUI())
-                .start();
+                .build();
+        tester.start();
     }
 
-    public void start() {
+    FirebaseTester(HttpClient httpClient, InputValidator validator, GUI gui)
+    {
+        this.mHttpClient = httpClient;
+        this.mValidator = validator;
+        this.mGUI = gui;
+        this.mGUI.setUserInterfaceEventListener(this);
+    }
+
+    private void start() {
         int errorCount = 0;
         if(mGUI == null) {
             System.out.println("ERROR: No GUI set");
@@ -63,14 +70,6 @@ public class FirebaseTester implements UserInterfaceEventListener
         mGUI.createFrame();
     }
 
-    public GUI getGUI() {
-        return mGUI;
-    }
-
-    public void onExit() {
-        System.out.println("FirebaseTester exit");
-    }
-
     @Override
     public void onFirebaseTestSubmitted(String apiKey, String requestBody)
     {
@@ -81,38 +80,58 @@ public class FirebaseTester implements UserInterfaceEventListener
             return;
         }
 
-        requestBody = requestBody.replaceAll("(?!\\r)\\n", "\r\n");
-        // TODO Create http request to Firebase
-        System.out.println("Send request");
+        mHttpClient.setApiKey(apiKey);
+        mHttpClient.prepareRequest(HttpUrl.parse(FIREBASE_API_URL));
+
+        // TODO Run on Thread
+        try {
+            requestBody = requestBody.replaceAll("(?!\\r)\\n", "\r\n");
+            HttpClient.Response response = mHttpClient.sendRequest(requestBody);
+            System.out.println(response.toString());
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
-    private String post(String url, String json, String apiKey) throws IOException
+    static class Builder
     {
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(url)
-                .header("Authorization", apiKey)
-                .post(body)
-                .build();
 
-        Response response = mHttpClient.sendRequest(request);
+        private HttpClient mHttpClient;
+        private InputValidator mValidator;
+        private GUI mGUI;
+        FirebaseTester.Builder setHttpClient(HttpClient httpClient) {
+            this.mHttpClient = httpClient;
+            return this;
+        }
 
-        return response.body().string();
+        FirebaseTester.Builder setInputValidator(InputValidator inputValidator) {
+            this.mValidator = inputValidator;
+            return this;
+        }
+
+        FirebaseTester.Builder setGUI(GUI gui) {
+            this.mGUI = gui;
+            return this;
+        }
+
+        FirebaseTester build()
+        {
+            if(mHttpClient == null) {
+                throw new IllegalStateException("HttpClient cannot be null");
+            }
+            if(mValidator == null) {
+                throw new IllegalStateException("InputValidator cannot be null");
+            }
+            if(mGUI == null) {
+                throw new IllegalStateException("GUI cannot be null");
+            }
+            return new FirebaseTester(this.mHttpClient, mValidator, mGUI);
+        }
+
     }
 
-    public FirebaseTester setHttpClient(HttpClient httpClient) {
-        this.mHttpClient = httpClient;
-        return this;
-    }
-
-    public FirebaseTester setInputValidator(InputValidator inputValidator) {
-        this.mValidator = inputValidator;
-        return this;
-    }
-
-    public FirebaseTester setGUI(GUI gui) {
-        this.mGUI = gui;
-        this.mGUI.setUserInterfaceEventListener(this);
-        return this;
+    public void onExit() {
+        System.out.println("FirebaseTester exit");
     }
 }

@@ -29,9 +29,6 @@ public class ProdInputValidator implements InputValidator
         if(!isValidApiKey(apiKey)) {
             errors.add(MESSAGE_API_KEY_MISSING);
         }
-        else if(!apiKey.startsWith("key=")){
-            errors.add(MESSAGE_API_KEY_INVALID_PREFIX);
-        }
         if(!isRequestBodyValidateable(requestBody)) {
             errors.add(MESSAGE_REQUEST_BODY_MISSING);
         }
