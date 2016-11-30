@@ -13,14 +13,18 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * TODO Builder form
+ * TODO Show Response
  * @author Rick Slinkman
  */
 public class FirebaseTester implements UserInterfaceEventListener
 {
-    public static final int VERSION_CODE = 1; // TODO Get from gradle
-    public static final String VERSION_NAME = "0.1"; // TODO Get from gradle
+    // Application constants
+    public static final int VERSION_CODE = 1;
+    public static final String VERSION_NAME = "0.1";
+    // Class specific constants
     private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
-
+    // Class variables
     private GUI mGUI;
     private HttpClient mHttpClient;
     private InputValidator mValidator;
