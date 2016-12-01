@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 /**
  * @author Rick Slinkman
  */
-public class InputValidatorTest
+public class ProdInputValidatorTest
 {
     private static final String MOCK_API_KEY = "key=ILIHWELUBEF784efefijwineuifNIWI48485651fwiu";
     private static final List<String> ADDRESSES = Arrays.asList("feuhjfeij293ur9if93k93kd92x", "feuhjfeij293ur9if93k93kd92y", "feuhjfeij293ur9if93k93kd92z");
@@ -263,21 +263,6 @@ public class InputValidatorTest
         assertNotNull(output);
         assertNotEquals(0, output.size());
         assertContains(output, ProdInputValidator.MESSAGE_REQUEST_BODY_INVALID_JSON);
-    }
-
-    @Test
-    public void test_shouldReturnMessage_whenApiKeyHasInvalidSuffix()
-    {
-        String addr = "feuhjfeij293ur9if93k93kd92";
-        Map<String, Object> data = mockMessageData();
-        String requestBody = createSingleRecipientJSON(addr, mapToJson(data));
-
-        String invalidSuffixedApiKey = MOCK_API_KEY.substring(4, MOCK_API_KEY.length());
-        output = this.inputValidator.validateInput(invalidSuffixedApiKey, requestBody);
-
-        assertNotNull(output);
-        assertNotEquals(0, output.size());
-        assertContains(output, ProdInputValidator.MESSAGE_API_KEY_INVALID_PREFIX);
     }
 
     @Test
