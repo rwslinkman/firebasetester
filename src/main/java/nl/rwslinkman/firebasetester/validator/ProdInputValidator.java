@@ -20,7 +20,6 @@ public class ProdInputValidator implements InputValidator
     static final String MESSAGE_REQUEST_BODY_ADDRESSES_INVALID = "The 'registration_ids' property should be of type array";
     static final String MESSAGE_REQUEST_BODY_ADDRESSES_NOT_ONLY_STRINGS = "The provided 'registrations_id' array property can only contain Strings";
     static final String MESSAGE_REQUEST_BODY_DATA_NOT_OBJECT = "The provided 'data' property should be a JSON object";
-    static final String MESSAGE_API_KEY_INVALID_PREFIX = "The provided API key should be prefixed with 'key='";
 
     @Override
     public List<String> validateInput(String apiKey, String requestBody)
