@@ -23,10 +23,7 @@ public class FirebaseTesterTest
     {
         mockHttpClient = new MockHttpClient();
         mockInputValidator = new MockInputValidator();
-        subj = new FirebaseTester()
-                .setHttpClient(mockHttpClient)
-                .setInputValidator(mockInputValidator)
-                .setGUI(new MockGUI());
+        subj = new FirebaseTester(mockHttpClient, mockInputValidator, new MockGUI());
     }
 
     @Test
@@ -34,7 +31,7 @@ public class FirebaseTesterTest
     {
         // TODO Create test that makes sense
         subj.onFirebaseTestSubmitted("", "");
-        assertTrue(mockHttpClient.wasCalled());
+        assertTrue(mockHttpClient.wasCalledSendRequest());
         assertFalse(mockInputValidator.wasCalled());
     }
 }
