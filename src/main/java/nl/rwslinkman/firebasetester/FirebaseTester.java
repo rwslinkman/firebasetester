@@ -21,7 +21,7 @@ public class FirebaseTester implements UserInterfaceEventListener
 {
     // Application constants
     public static final int VERSION_CODE = 1;
-    public static final String VERSION_NAME = "0.1";
+    public static final String VERSION_NAME = "0.2";
     // Class specific constants
     private static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
     // Class variables

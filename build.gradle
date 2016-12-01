@@ -17,7 +17,7 @@ plugins {
 }
 
 group 'nl.rwslinkman'
-version '1.0'
+version '0.2'
 
 apply plugin: 'java'
 
